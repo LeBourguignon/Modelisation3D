@@ -65,8 +65,8 @@ function init(){
 	// Création d'une courbe aléatoire de Bézier de degré 2 appartenant au plan tangent
 	var courbeBezier = new THREE.QuadraticBezierCurve3(
 		new THREE.Vector3(0, 5, -5),
-		new THREE.Vector3(10, 0, -5),
-		new THREE.Vector3(0, -5, -5)
+		new THREE.Vector3(-10, 0, -5),
+		new THREE.Vector3(-3, -5, -5)
 	);
 
 	// Affichage de la courbe de Bézier
@@ -75,28 +75,6 @@ function init(){
 	var courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
 	scene.add(courbeBezierMesh);
-
-	// Créer un raycaster
-	var raycaster = new THREE.Raycaster();
-
-	// Définir le point de départ et la direction du rayon
-	var origin = courbeBezier.v2;
-	var direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.v2);
-	direction.normalize();
-
-	// Mettre à jour le raycaster avec la position et la direction
-	raycaster.set(origin, direction);
-
-	// Trouver les points d'intersection entre le rayon et la sphère
-	var intersects = raycaster.intersectObject(sphere);
-    
-	console.log(intersects[0].point);
-
-	var pointGeometry = new THREE.Geometry();
-    pointGeometry.vertices.push(new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z));
-    var pointMaterial = new THREE.PointsMaterial({ color: 0x000000, size: 1 });
-    var pointMesh = new THREE.Points(pointGeometry, pointMaterial);
-    scene.add(pointMesh);
 	
 	//********************************************************
 	//
@@ -156,6 +134,28 @@ function init(){
 		stats.update();
 		// render avec requestAnimationFrame
 		requestAnimationFrame(renduAnim);
+
+		// 
+		let t = ((Date.now() / 100) % 100) / 100;
+		
+		// Créer un raycaster
+		var raycaster = new THREE.Raycaster();
+
+		// Définir le point de départ et la direction du rayon
+		var origin = courbeBezier.getPoint(t);
+		var direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.getPoint(t));
+		direction.normalize();
+
+		// Mettre à jour le raycaster avec la position et la direction
+		raycaster.set(origin, direction);
+
+		// Trouver les points d'intersection entre le rayon et la sphère
+		var intersects = raycaster.intersectObject(sphere);
+
+		// 
+		smallSphere.position.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z);
+
+
 		// ajoute le rendu dans l'element HTML
 		rendu.render(scene, camera);
 	}
