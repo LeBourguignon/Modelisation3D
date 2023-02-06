@@ -24,6 +24,20 @@ function init(){
  //
  //********************************************************
  
+	// Création de la sphère S : centre O, rayon 5
+
+	var sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+	var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
+	var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+	scene.add(sphere);
+
+	// Création de la sphère S0 : centre 1, rayon 1
+	var smallSphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+	var smallSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+	var smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
+	smallSphere.position.set(sphere.position.x + 5, sphere.position.y, sphere.position.z);
+	scene.add(smallSphere);
+	  
  
  //********************************************************
  //
