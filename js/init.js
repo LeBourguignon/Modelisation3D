@@ -1,13 +1,20 @@
 function init(){
 	var stats = initStats();
-    // creation de rendu et de la taille
+    
+	// creation de rendu et de la taille
 	let rendu = new THREE.WebGLRenderer({ antialias: true });
-	rendu.shadowMap.enabled = true;
-	let scene = new THREE.Scene();   
-	let camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 0.1, 100);
 	rendu.shadowMap.enabled = true;
 	rendu.setClearColor(new THREE.Color(0xFFFFFF));
 	rendu.setSize(window.innerWidth*.9, window.innerHeight*.9);
+
+	let scene = new THREE.Scene();   
+	let camera = new THREE.PerspectiveCamera(
+		75, 
+		window.innerWidth / window.innerHeight, 
+		1, 
+		1000
+		);
+	
 	cameraLumiere(scene,camera);
 	lumiere(scene);
 	repere(scene);
@@ -25,6 +32,8 @@ function init(){
 	// Création de la sphère S : centre O, rayon 5
 	var sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
 	var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
+	sphereMaterial.transparent = true;
+	sphereMaterial.opacity = 0.5;
 	var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 	scene.add(sphere);
 
@@ -47,6 +56,24 @@ function init(){
 	//  D E B U T     M E N U     G U I
 	//
 	//********************************************************
+
+	let gui = new dat.GUI();
+	let menuGUI = new function () {
+		this.cameraxPos = camera.position.x;
+		this.camerayPos = camera.position.y;
+		this.camerazPos = camera.position.z;
+		this.cameraZoom = 0.01;
+		this.cameraxDir = 0;
+		this.camerayDir = 0;
+		this.camerazDir = 0;
+
+		this.actualisation = function () {
+			posCamera();
+			reAffichage();
+		};
+	};
+
+	ajoutCameraGui(gui, menuGUI, camera);
 
 	//********************************************************
 	//
@@ -80,7 +107,7 @@ function init(){
 		rendu.render(scene, camera);
 	}
 	
-	} // fin fonction init()
+} // fin fonction init()
 
 function vecteur(MaScene, A, B, CoulHexa, longCone, RayonCone) {
 	// MaScene : objet de type THREE.Scene
@@ -95,12 +122,12 @@ function vecteur(MaScene, A, B, CoulHexa, longCone, RayonCone) {
 	let flecheAB = new THREE.ArrowHelper(AB.clone().normalize(), A, AB.length(), CoulHexa, longCone, RayonCone);
 	// Ajout de la flèche du vecteur AB à la scène
 	MaScene.add(flecheAB);
-  }// fin function vecteur()
+}// fin function vecteur()
   
-  function repere(MaScene) {
+function repere(MaScene) {
 	// MaScene : objet de type THREE.Scene
 	// Création des axes du repère
 	vecteur(MaScene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0), 0xFF0000, 0.1, 0.05);
 	vecteur(MaScene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), 0x00FF00, 0.1, 0.05);
 	vecteur(MaScene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1), 0x0000FF, 0.1, 0.05);
-  }// fin function repere()
+}// fin function repere()
