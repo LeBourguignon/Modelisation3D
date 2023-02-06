@@ -76,6 +76,37 @@ function init(){
 	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
 	scene.add(courbeBezierMesh);
 	
+	// Création d'une courbe de Bézier à partir d'un tableau de points
+	var points = [];
+	// Créer un raycaster
+	var raycaster = new THREE.Raycaster();
+	for (let i = 0; i < 100; i++) {
+		// Définition du temps
+		let t = ((i) % 100) / 100;
+
+		// Définir le point de départ et la direction du rayon
+		var origin = courbeBezier.getPoint(t);
+		var direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.getPoint(t));
+		direction.normalize();
+
+		// Mettre à jour le raycaster avec la position et la direction
+		raycaster.set(origin, direction);
+
+		// Trouver les points d'intersection entre le rayon et la sphère
+		var intersects = raycaster.intersectObject(sphere);
+
+		console.log(intersects[0].point);
+
+		points.push(new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z));
+	}
+
+	// Affichage de la courbe de Bézier
+	var courbeBezierGeometry = new THREE.Geometry();
+	courbeBezierGeometry.vertices = points;
+	var courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
+	scene.add(courbeBezierMesh);
+
 	//********************************************************
 	//
 	// F I N      P A R T I E     G E O M E T R I Q U E
@@ -135,7 +166,7 @@ function init(){
 		// render avec requestAnimationFrame
 		requestAnimationFrame(renduAnim);
 
-		// 
+		// Définition du temps
 		let t = ((Date.now() / 100) % 100) / 100;
 		
 		// Créer un raycaster
@@ -152,9 +183,8 @@ function init(){
 		// Trouver les points d'intersection entre le rayon et la sphère
 		var intersects = raycaster.intersectObject(sphere);
 
-		// 
+		// Déinition de la position de la sphère S0
 		smallSphere.position.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z);
-
 
 		// ajoute le rendu dans l'element HTML
 		rendu.render(scene, camera);
