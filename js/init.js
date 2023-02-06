@@ -40,11 +40,53 @@ function init(){
 	// Création de la sphère S0 : centre 1, rayon 1
 	var smallSphereGeometry = new THREE.SphereGeometry(1, 32, 32);
 	var smallSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+	smallSphereMaterial.transparent = true;
+	smallSphereMaterial.opacity = 0.5;
 	var smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
 	smallSphere.position.set(sphere.position.x + 5, sphere.position.y, sphere.position.z);
 	scene.add(smallSphere);
 
- 
+	// Réalisation d'une projection stéréographique de S
+	// Choix du pole de la projection stéréographique
+	var poleNord = new THREE.Vector3(0, 0, 5);
+	var poleSud = new THREE.Vector3(0, 0, -5);
+	// Création d'un plan tangent au pole Sud de la sphère S
+	var planTangent = new THREE.Plane(poleSud, -5);
+
+	// Affichage du plan tangent
+	var planTangentGeometry = new THREE.PlaneGeometry(10, 10);
+	var planTangentMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 });
+	planTangentMaterial.transparent = true;
+	planTangentMaterial.opacity = 0.5;
+	var planTangentMesh = new THREE.Mesh(planTangentGeometry, planTangentMaterial);
+	planTangentMesh.position.set(0, 0, -5);
+	scene.add(planTangentMesh);
+
+	// Création d'une courbe aléatoire de Bézier de degré 2 appartenant au plan tangent
+	var courbeBezier = new THREE.QuadraticBezierCurve3(
+		new THREE.Vector3(0, 5, -5),
+		new THREE.Vector3(10, 0, -5),
+		new THREE.Vector3(0, -5, -5)
+	);
+
+	// Affichage de la courbe de Bézier
+	var courbeBezierGeometry = new THREE.Geometry();
+	courbeBezierGeometry.vertices = courbeBezier.getPoints(50);
+	var courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
+	scene.add(courbeBezierMesh);
+
+	// Création des droites passant par le pole Nord et l'extremite de la courbe de Bézier
+	var droitePoleNordCourbeBezier = new THREE.Line3(poleNord, courbeBezier.v2);
+
+	// Affichage de la droite d
+	var droitePoleNordCourbeBezierGeometry = new THREE.Geometry();
+	droitePoleNordCourbeBezierGeometry.vertices.push(droitePoleNordCourbeBezier.start);
+	droitePoleNordCourbeBezierGeometry.vertices.push(droitePoleNordCourbeBezier.end);
+	var droitePoleNordCourbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+	var droitePoleNordCourbeBezierMesh = new THREE.Line(droitePoleNordCourbeBezierGeometry, droitePoleNordCourbeBezierMaterial);
+	scene.add(droitePoleNordCourbeBezierMesh);
+	
 	//********************************************************
 	//
 	// F I N      P A R T I E     G E O M E T R I Q U E

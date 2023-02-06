@@ -7,9 +7,9 @@ const borneVueDir = 20;
   
 function cameraLumiere(scene,camera){   // creation de la camera 
 	camera.up = new THREE.Vector3( 0, 0, 1 );
-	let xPos=10;
-	let yPos=10;
-	let zPos=10;
+	let xPos=5;
+	let yPos=5;
+	let zPos=5;
 	camera.position.set(xPos, yPos, zPos);
 	camera.lookAt(xDir, yDir, zDir);
 	camera.updateProjectionMatrix();
