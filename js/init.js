@@ -54,7 +54,7 @@ function init(){
 	var planTangent = new THREE.Plane(poleSud, -5);
 
 	// Affichage du plan tangent
-	var planTangentGeometry = new THREE.PlaneGeometry(10, 10);
+	var planTangentGeometry = new THREE.PlaneGeometry(50, 50);
 	var planTangentMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 });
 	planTangentMaterial.transparent = true;
 	planTangentMaterial.opacity = 0.5;
@@ -76,16 +76,27 @@ function init(){
 	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
 	scene.add(courbeBezierMesh);
 
-	// Création des droites passant par le pole Nord et l'extremite de la courbe de Bézier
-	var droitePoleNordCourbeBezier = new THREE.Line3(poleNord, courbeBezier.v2);
+	// Créer un raycaster
+	var raycaster = new THREE.Raycaster();
 
-	// Affichage de la droite d
-	var droitePoleNordCourbeBezierGeometry = new THREE.Geometry();
-	droitePoleNordCourbeBezierGeometry.vertices.push(droitePoleNordCourbeBezier.start);
-	droitePoleNordCourbeBezierGeometry.vertices.push(droitePoleNordCourbeBezier.end);
-	var droitePoleNordCourbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-	var droitePoleNordCourbeBezierMesh = new THREE.Line(droitePoleNordCourbeBezierGeometry, droitePoleNordCourbeBezierMaterial);
-	scene.add(droitePoleNordCourbeBezierMesh);
+	// Définir le point de départ et la direction du rayon
+	var origin = courbeBezier.v2;
+	var direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.v2);
+	direction.normalize();
+
+	// Mettre à jour le raycaster avec la position et la direction
+	raycaster.set(origin, direction);
+
+	// Trouver les points d'intersection entre le rayon et la sphère
+	var intersects = raycaster.intersectObject(sphere);
+    
+	console.log(intersects[0].point);
+
+	var pointGeometry = new THREE.Geometry();
+    pointGeometry.vertices.push(new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z));
+    var pointMaterial = new THREE.PointsMaterial({ color: 0x000000, size: 1 });
+    var pointMesh = new THREE.Points(pointGeometry, pointMaterial);
+    scene.add(pointMesh);
 	
 	//********************************************************
 	//
