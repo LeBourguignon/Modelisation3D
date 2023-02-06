@@ -4,9 +4,9 @@
   
  function cameraLumiere(scene,camera){   // creation de la camera 
   camera.up = new THREE.Vector3( 0, 0, 1 );
-  let xPos=3;
-  let yPos=3;
-  let zPos=3;
+  let xPos=15;
+  let yPos=15;
+  let zPos=15;
   camera.position.set(xPos, yPos, zPos);
   camera.lookAt(xDir, yDir, zDir);
   camera.updateProjectionMatrix();
