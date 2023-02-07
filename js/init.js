@@ -28,7 +28,7 @@ function init(){
 	//********************************************************
 
 	let sphere, smallSphere, poleNord, courbeBezier;
-	let rayon = {radius: 5}, smallRayon = {radius: 1};
+	let optionSphere = {radius: 5, opacity: 0.5, transparent: true}, optionSmallSphere = {radius: 1, opacity: 0.5, transparent: true};
 	let p0 = {x: 9, y: 7}, p1 = {x: -15, y: 0}, p2 = {x: 3, y: -9};
  
 	function geometrie() {
@@ -41,20 +41,20 @@ function init(){
 		repere(scene);
 
 		// Création de la sphère S : centre O
-		let sphereGeometry = new THREE.SphereGeometry(rayon.radius, 32, 32);
+		let sphereGeometry = new THREE.SphereGeometry(optionSphere.radius, 32, 32);
 		let sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
-		sphereMaterial.transparent = true;
-		sphereMaterial.opacity = 0.5;
+		sphereMaterial.transparent = optionSphere.transparent;
+		sphereMaterial.opacity = optionSphere.opacity;
 		sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 		scene.add(sphere);
 
 		// Création de la sphère S0 : centre 1, rayon 1
-		let smallSphereGeometry = new THREE.SphereGeometry(smallRayon.radius, 32, 32);
+		let smallSphereGeometry = new THREE.SphereGeometry(optionSmallSphere.radius, 32, 32);
 		let smallSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-		smallSphereMaterial.transparent = true;
-		smallSphereMaterial.opacity = 0.5;
+		smallSphereMaterial.transparent = optionSmallSphere.transparent;
+		smallSphereMaterial.opacity = optionSmallSphere.opacity;
 		smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
-		smallSphere.position.set(sphere.position.x + rayon.radius, sphere.position.y, sphere.position.z);
+		smallSphere.position.set(sphere.position.x + optionSphere.radius, sphere.position.y, sphere.position.z);
 		scene.add(smallSphere);
 
 		// Réalisation d'une projection stéréographique de S
@@ -65,13 +65,13 @@ function init(){
 		poleNord = new THREE.Vector3(
 			0, //rayon * Math.cos(longitudeNord) * Math.cos(latitudeNord),
 			0, //rayon * Math.cos(longitudeNord) * Math.sin(latitudeNord),
-			rayon.radius //rayon * Math.sin(longitudeNord)
+			optionSphere.radius //rayon * Math.sin(longitudeNord)
 		);
 		let poleSud = poleNord.clone().multiplyScalar(-1);
 
 		// Création d'un plan tangent au pole Sud de la sphère S
-		let normalPlan = poleSud.clone().multiplyScalar(rayon.radius);
-		let plan = new THREE.Plane(normalPlan, -rayon.radius);
+		let normalPlan = poleSud.clone().multiplyScalar(optionSphere.radius);
+		let plan = new THREE.Plane(normalPlan, -optionSphere.radius);
 
 		// Affichage du plan tangent
 		let planTangentMesh = new THREE.PlaneHelper(plan, 50, 0x00FF00);
@@ -79,9 +79,9 @@ function init(){
 
 		// Création d'une courbe aléatoire de Bézier de degré 2 appartenant au plan tangent
 		courbeBezier = new THREE.QuadraticBezierCurve3(
-			new THREE.Vector3(p0.x, p0.y, -rayon.radius),
-			new THREE.Vector3(p1.x, p1.y, -rayon.radius),
-			new THREE.Vector3(p2.x, p2.y, -rayon.radius)
+			new THREE.Vector3(p0.x, p0.y, -optionSphere.radius),
+			new THREE.Vector3(p1.x, p1.y, -optionSphere.radius),
+			new THREE.Vector3(p2.x, p2.y, -optionSphere.radius)
 		);
 
 		// Affichage de la courbe de Bézier
@@ -155,23 +155,23 @@ function init(){
 
 	// modification des parametres des spheres
 	let menuSphereS = gui.addFolder('Sphère S');
-	menuSphereS.add(sphere.material, 'transparent').name('transparent').onChange(reAffichage);
-	menuSphereS.add(sphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
-	menuSphereS.add(rayon, 'radius', 1, 10).step(1).name('rayon').onChange(reCalcul);
+	menuSphereS.add(optionSphere, 'transparent').name('transparent').onChange(reAffichage);
+	menuSphereS.add(optionSphere, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
+	menuSphereS.add(optionSphere, 'radius', 1, 10).step(1).name('rayon').onChange(reAffichage);
 
 	let menuSphereS0 = gui.addFolder('Sphère S0');
-	menuSphereS0.add(smallSphere.material, 'transparent').name('transparent').onChange(reAffichage);
-	menuSphereS0.add(smallSphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
-	menuSphereS0.add(smallRayon, 'radius', 1, 10).step(1).name('rayon').onChange(reCalcul);
+	menuSphereS0.add(optionSmallSphere, 'transparent').name('transparent').onChange(reAffichage);
+	menuSphereS0.add(optionSmallSphere, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
+	menuSphereS0.add(optionSmallSphere, 'radius', 1, 10).step(1).name('rayon').onChange(reAffichage);
 
     // modification des coordonnees des points de controle de la courbe de Bézier
     let menuCourbeBezier = gui.addFolder('Courbe de Bézier');
-    menuCourbeBezier.add(p0, 'x', -50, 50).step(1).name('x0').onChange(reCalcul);
-    menuCourbeBezier.add(p0, 'y', -50, 50).step(1).name('y0').onChange(reCalcul);
-    menuCourbeBezier.add(p1, 'x', -50, 50).step(1).name('x1').onChange(reCalcul);
-    menuCourbeBezier.add(p1, 'y', -50, 50).step(1).name('y1').onChange(reCalcul);
-    menuCourbeBezier.add(p2, 'x', -50, 50).step(1).name('x2').onChange(reCalcul);
-    menuCourbeBezier.add(p2, 'y', -50, 50).step(1).name('y2').onChange(reCalcul);
+    menuCourbeBezier.add(p0, 'x', -50, 50).step(1).name('x0').onChange(reAffichage);
+    menuCourbeBezier.add(p0, 'y', -50, 50).step(1).name('y0').onChange(reAffichage);
+    menuCourbeBezier.add(p1, 'x', -50, 50).step(1).name('x1').onChange(reAffichage);
+    menuCourbeBezier.add(p1, 'y', -50, 50).step(1).name('y1').onChange(reAffichage);
+    menuCourbeBezier.add(p2, 'x', -50, 50).step(1).name('x2').onChange(reAffichage);
+    menuCourbeBezier.add(p2, 'y', -50, 50).step(1).name('y2').onChange(reAffichage);
 
 	//********************************************************
 	//
@@ -185,16 +185,14 @@ function init(){
 	
 	// affichage de la scene
 	rendu.render(scene, camera);
-	
-	function reCalcul() {
-		geometrie();
-		reAffichage();
-	}
 
 	function reAffichage() {
 		setTimeout(function () { 
 		
 		}, 200);// fin setTimeout(function ()
+
+		geometrie();
+
 		// render avec requestAnimationFrame
 		rendu.render(scene, camera);
 	}// fin fonction reAffichage()
