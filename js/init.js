@@ -28,90 +28,104 @@ function init(){
 	//  P A R T I E     G E O M E T R I Q U E
 	//
 	//********************************************************
+
+	let sphere, smallSphere, poleNord, courbeBezier;
+	let rayon = {radius: 5}, smallRayon = {radius: 1};
+	let p0 = {x: 9, y: 7}, p1 = {x: -15, y: 0}, p2 = {x: 3, y: -9};
  
-	let rayon = 5;
+	function calculeGeometrique() {
+		while(scene.children.length > 0) {
+			scene.remove(scene.children[0]);
+		}
+		cameraLumiere(scene,camera);
+		lumiere(scene);
+		repere(scene);
 
-	// Création de la sphère S : centre O
-	var sphereGeometry = new THREE.SphereGeometry(rayon, 32, 32);
-	var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
-	sphereMaterial.transparent = true;
-	sphereMaterial.opacity = 0.5;
-	var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-	scene.add(sphere);
+		scene.add(axes);
+		repere(scene);
 
-	let smallRayon = 1
+		// Création de la sphère S : centre O
+		let sphereGeometry = new THREE.SphereGeometry(rayon.radius, 32, 32);
+		let sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
+		sphereMaterial.transparent = true;
+		sphereMaterial.opacity = 0.5;
+		sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+		scene.add(sphere);
 
-	// Création de la sphère S0 : centre 1, rayon 1
-	let smallSphereGeometry = new THREE.SphereGeometry(smallRayon, 32, 32);
-	let smallSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-	smallSphereMaterial.transparent = true;
-	smallSphereMaterial.opacity = 0.5;
-	let smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
-	smallSphere.position.set(sphere.position.x + rayon, sphere.position.y, sphere.position.z);
-	scene.add(smallSphere);
+		// Création de la sphère S0 : centre 1, rayon 1
+		let smallSphereGeometry = new THREE.SphereGeometry(smallRayon.radius, 32, 32);
+		let smallSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+		smallSphereMaterial.transparent = true;
+		smallSphereMaterial.opacity = 0.5;
+		smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
+		smallSphere.position.set(sphere.position.x + rayon.radius, sphere.position.y, sphere.position.z);
+		scene.add(smallSphere);
 
-	// Réalisation d'une projection stéréographique de S
-	// Choix du pole de la projection stéréographique
-	let longitudeNord = Math.PI/2;
-	let latitudeNord = 0;
+		// Réalisation d'une projection stéréographique de S
+		// Choix du pole de la projection stéréographique
+		let longitudeNord = Math.PI/2;
+		let latitudeNord = 0;
 
-	let poleNord = new THREE.Vector3(
-		0, //rayon * Math.cos(longitudeNord) * Math.cos(latitudeNord),
-		0, //rayon * Math.cos(longitudeNord) * Math.sin(latitudeNord),
-		rayon //rayon * Math.sin(longitudeNord)
-	);
-	let poleSud = poleNord.clone().multiplyScalar(-1);
+		poleNord = new THREE.Vector3(
+			0, //rayon * Math.cos(longitudeNord) * Math.cos(latitudeNord),
+			0, //rayon * Math.cos(longitudeNord) * Math.sin(latitudeNord),
+			rayon.radius //rayon * Math.sin(longitudeNord)
+		);
+		let poleSud = poleNord.clone().multiplyScalar(-1);
 
-	// Création d'un plan tangent au pole Sud de la sphère S
-	let normalPlan = poleSud.clone().multiplyScalar(rayon);
-	let plan = new THREE.Plane(normalPlan, -rayon);
+		// Création d'un plan tangent au pole Sud de la sphère S
+		let normalPlan = poleSud.clone().multiplyScalar(rayon.radius);
+		let plan = new THREE.Plane(normalPlan, -rayon.radius);
 
-	// Affichage du plan tangent
-	var planTangentMesh = new THREE.PlaneHelper(plan, 50, 0x00FF00);
-	scene.add(planTangentMesh);
+		// Affichage du plan tangent
+		let planTangentMesh = new THREE.PlaneHelper(plan, 50, 0x00FF00);
+		scene.add(planTangentMesh);
 
-	// Création d'une courbe aléatoire de Bézier de degré 2 appartenant au plan tangent
-	var courbeBezier = new THREE.QuadraticBezierCurve3(
-		new THREE.Vector3(9, 7, -rayon),
-		new THREE.Vector3(-15, 0, -rayon),
-		new THREE.Vector3(3, -9, -rayon)
-	);
+		// Création d'une courbe aléatoire de Bézier de degré 2 appartenant au plan tangent
+		courbeBezier = new THREE.QuadraticBezierCurve3(
+			new THREE.Vector3(p0.x, p0.y, -rayon.radius),
+			new THREE.Vector3(p1.x, p1.y, -rayon.radius),
+			new THREE.Vector3(p2.x, p2.y, -rayon.radius)
+		);
 
-	// Affichage de la courbe de Bézier
-	var courbeBezierGeometry = new THREE.Geometry();
-	courbeBezierGeometry.vertices = courbeBezier.getPoints(50);
-	var courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
-	scene.add(courbeBezierMesh);
-	
-	// Création d'une courbe de Bézier à partir d'un tableau de points
-	var points = [];
-	// Créer un raycaster
-	var raycaster = new THREE.Raycaster();
-	for (let i = 0; i < 100; i++) {
-		// Définition du temps
-		let t = ((i) % 100) / 100;
+		// Affichage de la courbe de Bézier
+		let courbeBezierGeometry = new THREE.Geometry();
+		courbeBezierGeometry.vertices = courbeBezier.getPoints(50);
+		let courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+		let courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
+		scene.add(courbeBezierMesh);
+		
+		// Création d'une courbe de Bézier à partir d'un tableau de points
+		let points = [];
+		// Créer un raycaster
+		let raycaster = new THREE.Raycaster();
+		for (let i = 0; i < 100; i++) {
+			// Définition du temps
+			let t = ((i) % 100) / 100;
 
-		// Définir le point de départ et la direction du rayon
-		var origin = courbeBezier.getPoint(t);
-		var direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.getPoint(t));
-		direction.normalize();
+			// Définir le point de départ et la direction du rayon
+			let origin = courbeBezier.getPoint(t);
+			let direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.getPoint(t));
+			direction.normalize();
 
-		// Mettre à jour le raycaster avec la position et la direction
-		raycaster.set(origin, direction);
+			// Mettre à jour le raycaster avec la position et la direction
+			raycaster.set(origin, direction);
 
-		// Trouver les points d'intersection entre le rayon et la sphère
-		var intersects = raycaster.intersectObject(sphere);
+			// Trouver les points d'intersection entre le rayon et la sphère
+			let intersects = raycaster.intersectObject(sphere);
 
-		points.push(new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z));
+			points.push(new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z));
+		}
+
+		// Affichage de la courbe obtenue par projection stéréographique
+		let courbeProjetee = new THREE.Geometry();
+		courbeProjetee.vertices = points;
+		let courbeProjeteeMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000 });
+		let courbeProjeteeMesh = new THREE.Line(courbeProjetee, courbeProjeteeMaterial);
+		scene.add(courbeProjeteeMesh);
 	}
 
-	// Affichage de la courbe obtenue par projection stéréographique
-	var courbeProjetee = new THREE.Geometry();
-	courbeProjetee.vertices = points;
-	var courbeProjeteeMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000 });
-	var courbeProjeteeMesh = new THREE.Line(courbeProjetee, courbeProjeteeMaterial);
-	scene.add(courbeProjeteeMesh);
+	calculeGeometrique();
 
 	//********************************************************
 	//
@@ -147,10 +161,21 @@ function init(){
 	let menuSphereS = gui.addFolder('Sphère S');
 	menuSphereS.add(sphere.material, 'transparent').name('transparent').onChange(reAffichage);
 	menuSphereS.add(sphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
+	menuSphereS.add(rayon, 'radius', 1, 10).step(1).name('rayon').onChange(reAffichage);
 
 	let menuSphereS0 = gui.addFolder('Sphère S0');
 	menuSphereS0.add(smallSphere.material, 'transparent').name('transparent').onChange(reAffichage);
 	menuSphereS0.add(smallSphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
+	menuSphereS0.add(smallRayon, 'radius', 1, 10).step(1).name('rayon').onChange(reAffichage);
+
+    // modification des coordonnees des points de controle de la courbe de Bézier
+    let menuCourbeBezier = gui.addFolder('Courbe de Bézier');
+    menuCourbeBezier.add(p0, 'x', -50, 50).step(1).name('x0').onChange(reAffichage);
+    menuCourbeBezier.add(p0, 'y', -50, 50).step(1).name('y0').onChange(reAffichage);
+    menuCourbeBezier.add(p1, 'x', -50, 50).step(1).name('x1').onChange(reAffichage);
+    menuCourbeBezier.add(p1, 'y', -50, 50).step(1).name('y1').onChange(reAffichage);
+    menuCourbeBezier.add(p2, 'x', -50, 50).step(1).name('x2').onChange(reAffichage);
+    menuCourbeBezier.add(p2, 'y', -50, 50).step(1).name('y2').onChange(reAffichage);
 
 	//********************************************************
 	//
@@ -169,6 +194,10 @@ function init(){
 		setTimeout(function () { 
 		
 		}, 200);// fin setTimeout(function ()
+
+		calculeGeometrique();
+		console.log(scene)
+
 		// render avec requestAnimationFrame
 		rendu.render(scene, camera);
 	}// fin fonction reAffichage()
