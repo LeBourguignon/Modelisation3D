@@ -196,7 +196,6 @@ function init(){
 		}, 200);// fin setTimeout(function ()
 
 		calculeGeometrique();
-		console.log(scene)
 
 		// render avec requestAnimationFrame
 		rendu.render(scene, camera);
@@ -211,18 +210,18 @@ function init(){
 		let t = ((Date.now() / 100) % 100) / 100;
 		
 		// Créer un raycaster
-		var raycaster = new THREE.Raycaster();
+		let raycaster = new THREE.Raycaster();
 
 		// Définir le point de départ et la direction du rayon
-		var origin = courbeBezier.getPoint(t);
-		var direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.getPoint(t));
+		let origin = courbeBezier.getPoint(t);
+		let direction = new THREE.Vector3().subVectors(poleNord, courbeBezier.getPoint(t));
 		direction.normalize();
 
 		// Mettre à jour le raycaster avec la position et la direction
 		raycaster.set(origin, direction);
 
 		// Trouver les points d'intersection entre le rayon et la sphère
-		var intersects = raycaster.intersectObject(sphere);
+		let intersects = raycaster.intersectObject(sphere);
 
 		// Déinition de la position de la sphère S0
 		smallSphere.position.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z);
