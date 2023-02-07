@@ -62,8 +62,6 @@ function init(){
 	);
 	let poleSud = poleNord.clone().multiplyScalar(-1);
 
-	console.log(poleNord, poleSud)
-
 	// Création d'un plan tangent au pole Sud de la sphère S
 	let normalPlan = poleSud.clone().multiplyScalar(rayon);
 	let plan = new THREE.Plane(normalPlan, -rayon);
@@ -108,12 +106,12 @@ function init(){
 		points.push(new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z));
 	}
 
-	// Affichage de la courbe de Bézier
-	var courbeBezierGeometry = new THREE.Geometry();
-	courbeBezierGeometry.vertices = points;
-	var courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000 });
-	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
-	scene.add(courbeBezierMesh);
+	// Affichage de la courbe obtenue par projection stéréographique
+	var courbeProjetee = new THREE.Geometry();
+	courbeProjetee.vertices = points;
+	var courbeProjeteeMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000 });
+	var courbeProjeteeMesh = new THREE.Line(courbeProjetee, courbeProjeteeMaterial);
+	scene.add(courbeProjeteeMesh);
 
 	//********************************************************
 	//
@@ -154,7 +152,6 @@ function init(){
 	menuSphereS0.add(smallSphere.material, 'transparent').name('transparent').onChange(reAffichage);
 	menuSphereS0.add(smallSphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
 
-
 	//********************************************************
 	//
 	//  F I N     M E N U     G U I
@@ -162,13 +159,11 @@ function init(){
 	//********************************************************
  	renduAnim();
  
- 
 	// ajoute le rendu dans l'element HTML
 	document.getElementById("webgl").appendChild(rendu.domElement);
 	
 	// affichage de la scene
 	rendu.render(scene, camera);
-	
 	
 	function reAffichage() {
 		setTimeout(function () { 
@@ -177,7 +172,6 @@ function init(){
 		// render avec requestAnimationFrame
 		rendu.render(scene, camera);
 	}// fin fonction reAffichage()
-	
 	
 	function renduAnim() {
 		stats.update();
