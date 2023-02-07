@@ -35,7 +35,6 @@ function init(){
 		while(scene.children.length > 0) {
 			scene.remove(scene.children[0]);
 		}
-		cameraLumiere(scene,camera);
 		lumiere(scene);
 		scene.add(axes);
 		repere(scene);
@@ -157,21 +156,21 @@ function init(){
 	let menuSphereS = gui.addFolder('Sphère S');
 	menuSphereS.add(sphere.material, 'transparent').name('transparent').onChange(reAffichage);
 	menuSphereS.add(sphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
-	menuSphereS.add(rayon, 'radius', 1, 10).step(1).name('rayon').onChange(reAffichage);
+	menuSphereS.add(rayon, 'radius', 1, 10).step(1).name('rayon').onChange(reCalcul);
 
 	let menuSphereS0 = gui.addFolder('Sphère S0');
 	menuSphereS0.add(smallSphere.material, 'transparent').name('transparent').onChange(reAffichage);
 	menuSphereS0.add(smallSphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
-	menuSphereS0.add(smallRayon, 'radius', 1, 10).step(1).name('rayon').onChange(reAffichage);
+	menuSphereS0.add(smallRayon, 'radius', 1, 10).step(1).name('rayon').onChange(reCalcul);
 
     // modification des coordonnees des points de controle de la courbe de Bézier
     let menuCourbeBezier = gui.addFolder('Courbe de Bézier');
-    menuCourbeBezier.add(p0, 'x', -50, 50).step(1).name('x0').onChange(reAffichage);
-    menuCourbeBezier.add(p0, 'y', -50, 50).step(1).name('y0').onChange(reAffichage);
-    menuCourbeBezier.add(p1, 'x', -50, 50).step(1).name('x1').onChange(reAffichage);
-    menuCourbeBezier.add(p1, 'y', -50, 50).step(1).name('y1').onChange(reAffichage);
-    menuCourbeBezier.add(p2, 'x', -50, 50).step(1).name('x2').onChange(reAffichage);
-    menuCourbeBezier.add(p2, 'y', -50, 50).step(1).name('y2').onChange(reAffichage);
+    menuCourbeBezier.add(p0, 'x', -50, 50).step(1).name('x0').onChange(reCalcul);
+    menuCourbeBezier.add(p0, 'y', -50, 50).step(1).name('y0').onChange(reCalcul);
+    menuCourbeBezier.add(p1, 'x', -50, 50).step(1).name('x1').onChange(reCalcul);
+    menuCourbeBezier.add(p1, 'y', -50, 50).step(1).name('y1').onChange(reCalcul);
+    menuCourbeBezier.add(p2, 'x', -50, 50).step(1).name('x2').onChange(reCalcul);
+    menuCourbeBezier.add(p2, 'y', -50, 50).step(1).name('y2').onChange(reCalcul);
 
 	//********************************************************
 	//
@@ -186,13 +185,15 @@ function init(){
 	// affichage de la scene
 	rendu.render(scene, camera);
 	
+	function reCalcul() {
+		geometrie();
+		reAffichage();
+	}
+
 	function reAffichage() {
 		setTimeout(function () { 
 		
 		}, 200);// fin setTimeout(function ()
-
-		geometrie();
-
 		// render avec requestAnimationFrame
 		rendu.render(scene, camera);
 	}// fin fonction reAffichage()
