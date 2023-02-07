@@ -1,5 +1,5 @@
 function init(){
-	var stats = initStats();
+	let stats = initStats();
     
 	// creation de rendu et de la taille
 	let rendu = new THREE.WebGLRenderer({ antialias: true });
@@ -19,7 +19,7 @@ function init(){
 	lumiere(scene);
 	repere(scene);
  
-	var axes = new THREE.AxesHelper(1);
+	let axes = new THREE.AxesHelper(1);
 	scene.add(axes);
 	repere(scene);
 
@@ -29,44 +29,54 @@ function init(){
 	//
 	//********************************************************
  
-	// Création de la sphère S : centre O, rayon 5
-	var sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+	let rayon = 5;
+
+	// Création de la sphère S : centre O
+	var sphereGeometry = new THREE.SphereGeometry(rayon, 32, 32);
 	var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
 	sphereMaterial.transparent = true;
 	sphereMaterial.opacity = 0.5;
 	var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 	scene.add(sphere);
 
+	let smallRayon = 1
+
 	// Création de la sphère S0 : centre 1, rayon 1
-	var smallSphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-	var smallSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+	let smallSphereGeometry = new THREE.SphereGeometry(smallRayon, 32, 32);
+	let smallSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 	smallSphereMaterial.transparent = true;
 	smallSphereMaterial.opacity = 0.5;
-	var smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
-	smallSphere.position.set(sphere.position.x + 5, sphere.position.y, sphere.position.z);
+	let smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
+	smallSphere.position.set(sphere.position.x + rayon, sphere.position.y, sphere.position.z);
 	scene.add(smallSphere);
 
 	// Réalisation d'une projection stéréographique de S
 	// Choix du pole de la projection stéréographique
-	var poleNord = new THREE.Vector3(0, 0, 5);
-	var poleSud = new THREE.Vector3(0, 0, -5);
+	let longitudeNord = Math.PI/2;
+	let latitudeNord = 0;
+
+	let poleNord = new THREE.Vector3(
+		0, //rayon * Math.cos(longitudeNord) * Math.cos(latitudeNord),
+		0, //rayon * Math.cos(longitudeNord) * Math.sin(latitudeNord),
+		rayon //rayon * Math.sin(longitudeNord)
+	);
+	let poleSud = poleNord.clone().multiplyScalar(-1);
+
+	console.log(poleNord, poleSud)
+
 	// Création d'un plan tangent au pole Sud de la sphère S
-	var planTangent = new THREE.Plane(poleSud, -5);
+	let normalPlan = poleSud.clone().multiplyScalar(rayon);
+	let plan = new THREE.Plane(normalPlan, -rayon);
 
 	// Affichage du plan tangent
-	var planTangentGeometry = new THREE.PlaneGeometry(50, 50);
-	var planTangentMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 });
-	planTangentMaterial.transparent = true;
-	planTangentMaterial.opacity = 0.5;
-	var planTangentMesh = new THREE.Mesh(planTangentGeometry, planTangentMaterial);
-	planTangentMesh.position.set(0, 0, -5);
+	var planTangentMesh = new THREE.PlaneHelper(plan, 50, 0x00FF00);
 	scene.add(planTangentMesh);
 
 	// Création d'une courbe aléatoire de Bézier de degré 2 appartenant au plan tangent
 	var courbeBezier = new THREE.QuadraticBezierCurve3(
-		new THREE.Vector3(0, 5, -5),
-		new THREE.Vector3(-10, 0, -5),
-		new THREE.Vector3(-3, -5, -5)
+		new THREE.Vector3(9, 7, -rayon),
+		new THREE.Vector3(-15, 0, -rayon),
+		new THREE.Vector3(3, -9, -rayon)
 	);
 
 	// Affichage de la courbe de Bézier
@@ -94,8 +104,6 @@ function init(){
 
 		// Trouver les points d'intersection entre le rayon et la sphère
 		var intersects = raycaster.intersectObject(sphere);
-
-		console.log(intersects[0].point);
 
 		points.push(new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z));
 	}
