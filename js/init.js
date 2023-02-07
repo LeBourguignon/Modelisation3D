@@ -103,7 +103,7 @@ function init(){
 	// Affichage de la courbe de Bézier
 	var courbeBezierGeometry = new THREE.Geometry();
 	courbeBezierGeometry.vertices = points;
-	var courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+	var courbeBezierMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000 });
 	var courbeBezierMesh = new THREE.Line(courbeBezierGeometry, courbeBezierMaterial);
 	scene.add(courbeBezierMesh);
 
@@ -136,6 +136,16 @@ function init(){
 	};
 
 	ajoutCameraGui(gui, menuGUI, camera);
+
+	// modification des parametres des spheres
+	let menuSphereS = gui.addFolder('Sphère S');
+	menuSphereS.add(sphere.material, 'transparent').name('transparent').onChange(reAffichage);
+	menuSphereS.add(sphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
+
+	let menuSphereS0 = gui.addFolder('Sphère S0');
+	menuSphereS0.add(smallSphere.material, 'transparent').name('transparent').onChange(reAffichage);
+	menuSphereS0.add(smallSphere.material, 'opacity', 0, 1).step(0.1).name('opacité').onChange(reAffichage);
+
 
 	//********************************************************
 	//
