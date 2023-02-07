@@ -31,7 +31,7 @@ function init(){
 	let rayon = {radius: 5}, smallRayon = {radius: 1};
 	let p0 = {x: 9, y: 7}, p1 = {x: -15, y: 0}, p2 = {x: 3, y: -9};
  
-	function calculeGeometrique() {
+	function geometrie() {
 		while(scene.children.length > 0) {
 			scene.remove(scene.children[0]);
 		}
@@ -121,7 +121,7 @@ function init(){
 		scene.add(courbeProjeteeMesh);
 	}
 
-	calculeGeometrique();
+	geometrie();
 
 	//********************************************************
 	//
@@ -191,7 +191,7 @@ function init(){
 		
 		}, 200);// fin setTimeout(function ()
 
-		calculeGeometrique();
+		geometrie();
 
 		// render avec requestAnimationFrame
 		rendu.render(scene, camera);
