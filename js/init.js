@@ -15,7 +15,7 @@ function init(){
 		1000
 		);
 	
-	cameraLumiere(scene,camera);
+	initcameraLumiere(scene,camera);
 	lumiere(scene); 
 	let axes = new THREE.AxesHelper(1);
 	scene.add(axes);
@@ -35,6 +35,7 @@ function init(){
 		while(scene.children.length > 0) {
 			scene.remove(scene.children[0]);
 		}
+		cameraLumiere(scene,camera);
 		lumiere(scene);
 		scene.add(axes);
 		repere(scene);

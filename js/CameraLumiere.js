@@ -9,10 +9,15 @@ const zPos=10;
 const borneVuePos = 50;
 const borneVueDir = 20;
   
-function cameraLumiere(scene,camera){   // creation de la camera 
+function initcameraLumiere(scene,camera) {
 	camera.up = new THREE.Vector3( 0, 0, 1 );
 	camera.position.set(xPos, yPos, zPos);
 	camera.lookAt(xDir, yDir, zDir);
+	camera.updateProjectionMatrix();
+}
+
+function cameraLumiere(scene,camera){   // creation de la camera 
+	camera.up = new THREE.Vector3( 0, 0, 1 );
 	camera.updateProjectionMatrix();
 } // fin fonction cameraLumiere
 
